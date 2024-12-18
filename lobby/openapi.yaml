@@ -1,0 +1,70 @@
+openapi: 3.1.0
+info:
+  title: Blazium Lobby API
+  description: API for the Blazium service including file uploads, WebSocket connections, stats, and health checks.
+  version: 1.0.0
+servers:
+  - url: https://authlobby.blazium.app
+paths:
+  /connect:
+    get:
+      summary: WebSocket endpoint
+      description: Endpoint to establish a WebSocket connection.
+      responses:
+        101:
+          description: WebSocket connection established
+  /upload/{game_id}:
+    post:
+      summary: Upload a file
+      description: Upload a file to the specified `game_id` directory.
+      parameters:
+        - name: game_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the game to associate with the uploaded file.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: File uploaded successfully
+        '400':
+          description: Bad request (invalid game_id or form data)
+        '405':
+          description: Method not allowed
+  /stats:
+    get:
+      summary: Get server stats
+      description: Retrieve statistics about the server.
+      responses:
+        '200':
+          description: Successful response with server stats
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  uptime: "1234s"
+                  connections: 5
+  /health:
+    get:
+      summary: Health check
+      description: Check the server's health status.
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  status: "healthy"
